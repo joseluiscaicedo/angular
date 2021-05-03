@@ -1,57 +1,79 @@
-# Actualización de AngularJS a Angular
+# Upgrading from AngularJS to Angular
 
-_Angular_ es el nombre de Angular hoy y mañana.<br />
-_AngularJS_ es el nombre de todas las versiones 1.x de Angular.
+_Angular_ is the name for the Angular of today and tomorrow.<br />
+_AngularJS_ is the name for all 1.x versions of Angular.
 
-Las apps de AngularJS son geniales.
-Tenga en cuenta los casos de negocio, antes de moverse a Angular.
+AngularJS apps are great.
+Always consider the business case before moving to Angular.
+An important part of that case is the time and effort to get there.
+This guide describes the built-in tools for efficiently migrating AngularJS projects over to the
+Angular platform, a piece at a time.
 
-Una parte importante del caso es el tiempo y el esfuerzo para conseguirlo.
+Some applications will be easier to upgrade than others, and there are
+many ways to make it easier for yourself. It is possible to
+prepare and align AngularJS applications with Angular even before beginning
+the upgrade process. These preparation steps are all about making the code
+more decoupled, more maintainable, and better aligned with modern development
+tools. That means in addition to making the upgrade easier,
+you will also improve the existing AngularJS applications.
 
-Esta guía describe la creación de herramientas para migrar eficientemente los proyectos de AngularJS a la plataforma de Angular
-poco a poco.
+One of the keys to a successful upgrade is to do it incrementally,
+by running the two frameworks side by side in the same application, and
+porting AngularJS components to Angular one by one. This makes it possible
+to upgrade even large and complex applications without disrupting other
+business, because the work can be done collaboratively and spread over
+a period of time. The `upgrade` module in Angular has been designed to
+make incremental upgrading seamless.
 
-Algunas aplicaciones podrán ser actualizadas más fáciles que otras, y tenemos varias maneras de hacerlo fácil para usted.
-Es posible preparar y alinear las aplicaciones AngularJS con Angular incluso antes de comenzar el proceso de actualización. Estos pasos de preparación tiene que ver con hacer el codigo más desacoplado, más mantenible, y responden mejor con herramientas de desarrollo modernas. Eso significa que hace más faciles las actualizaciones,
-también mejorará las aplicaciones de AngularJS existentes.
+## Preparation
 
-Una de las claves para una actualización exitosa es hacerlo gradualmente, ejecutando los dos marcos de trabajo uno al lado del otro en la misma aplicación, y portando componentes AngularJS a Angular uno por uno. Esto hace posible actualizar incluso largas y complejas aplicaciones sin interrupción de otros negocios, porque el trabajo se puede hacer colaborativamente y extenderlo en un periodo de tiempo. El modulo `upgrade` en Angular ha sido diseñado para que haga la actualizacion incremental.
-
-## Preparación
-
-Hay muchas formas para estructurar las aplicaciones de AngularJS. Cuando comience a actualizar estás actualizaciones a Angular, algunas resultarán ser mucho más fácil de trabajar que otras.
-Hay algunas técnicas clave y patrones que se pueden aplicar a aplicaciones a prueba de futuro incluso antes de que usted inicie la migración.
+There are many ways to structure AngularJS applications. When you begin
+to upgrade these applications to Angular, some will turn out to be
+much more easy to work with than others. There are a few key techniques
+and patterns that you can apply to future proof apps even before you
+begin the migration.
 
 {@a follow-the-angular-styleguide}
 
-### Siga la Guía de Estilo de AngularJS
+### Follow the AngularJS Style Guide
 
-La [Guía de Estilo de AngularJS](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
-recopila patrones y prácticas que han demostrado resultar en aplicaciones AngularJS más limpias y mas fáciles de mantener.
-Contiene una gran riqueza de información sobre como escribir y organizar código de AngularJS - e igualmente importante - como **no** escribir y organizar el código en AngularJS.
+The [AngularJS Style Guide](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md)
+collects patterns and practices that have been proven to result in
+cleaner and more maintainable AngularJS applications. It contains a wealth
+of information about how to write and organize AngularJS code - and equally
+importantly - how **not** to write and organize AngularJS code.
 
-Angular es una versión rediseñada con las mejores partes de AngularJS. En ese sentido, sus objetivos son los mismos que los de la Guía de Estilo de AngularJS: Para preservar lo mejor de AngularJS, y evitar lo malo. Angular es mucho más que eso, por supuesto, pero eso significa que *seguir las guía de estilo ayuda a que su aplicacion en AngularJS sea más cercana alineada con Angular*.
+Angular is a reimagined version of the best parts of AngularJS. In that
+sense, its goals are the same as the AngularJS Style Guide's: To preserve
+the good parts of AngularJS, and to avoid the bad parts. There's a lot
+more to Angular than just that of course, but this does mean that
+*following the style guide helps make your AngularJS app more closely
+aligned with Angular*.
 
-Hay algunas reglas en particular que harán que sea mucho más fácil de hacer *una actualización incremental* usando el módulo de Angular:
- `upgrade/static`
+There are a few rules in particular that will make it much easier to do
+*an incremental upgrade* using the Angular `upgrade/static` module:
 
-* La [Regla de 1](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)
-Establece que debe existir un componente por archivo. Esto no solo hace que los componentes sean fáciles para navegar y encontrar, pero también nos permitirá migrar entre idiomas y frameworks uno a la vez. En este ejemplo de aplicación cada controlador, componente, servicio y filtro están en su propio archivo fuente.
+* The [Rule of 1](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)
+  states that there should be one component per file. This not only makes
+  components easy to navigate and find, but will also allow us to migrate
+  them between languages and frameworks one at a time. In this example application,
+  each controller, component, service, and filter is in its own source file.
 
-* La [Estructura de Carpetas por Funcionalidad](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
-y [Modularidad](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
-Las reglas definen principios similares en un nivel superior de abstracción: Diferentes partes de la aplicación deben residir en diferentes directorios y NgModules.
+* The [Folders-by-Feature Structure](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
+  and [Modularity](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
+  rules define similar principles on a higher level of abstraction: Different parts of the
+  application should reside in different directories and NgModules.
 
-Cuando una aplicación se expone funcionalidad por funcionalidad,también puede ser migrada una funcionalidad a la vez.
-Para aplicaciones que no lucen asi, es un paso de preparación muy recomendable aplicar las reglas de la guía de estilo de AngularJS
-. y no es solo por el bien de la actualización - es un buen consejo en general!
+When an application is laid out feature per feature in this way, it can also be
+migrated one feature at a time. For applications that don't already look like
+this, applying the rules in the AngularJS style guide is a highly recommended
+preparation step. And this is not just for the sake of the upgrade - it is just
+solid advice in general!
 
-### Usando un Cargador de Modulo
+### Using a Module Loader
 
-Cuando divida el código de la aplicación en un componente por archivo,
-
-
-When you break application code down into one component per file, you often end up with a project structure with a large number of relatively small files. This is
+When you break application code down into one component per file, you often end
+up with a project structure with a large number of relatively small files. This is
 a much neater way to organize things than a small number of large files, but it
 doesn't work that well if you have to load all those files to the HTML page with
 &lt;script&gt; tags. Especially when you also have to maintain those tags in the correct
