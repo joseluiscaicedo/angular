@@ -91,101 +91,93 @@ cuales se construyen las interfaces de usuario. Usted define las diferentes
 partes de la Interfaz de Usuario como componentes y conformarlos en una
 experiencia de usuario completa.
 
-Usted tambien puede hacerlo en AngularJS usando *Directivas de componentes*
+Usted también puede hacerlo en AngularJS usando *Directivas de componentes*
 Estas son directivas que definen sus propias plantillas, controladores, y enlaces
 de entrada / salida - las mismas cosas que definen los componentes en Angular.
 Las aplicaciones creadas con directivas de componentes son mucho más fáciles de
 migrar a Angular que las aplicaciones creadas con funcionalidades de nivel inferior
 como `ng-controller`, `ng-include`, y el alcance de la herencia.
 
-You can also do this in AngularJS, using *component directives*. These are
-directives that define their own templates, controllers, and input/output bindings -
-the same things that Angular components define. Applications built with
-component directives are much easier to migrate to Angular than applications
-built with lower-level features like `ng-controller`,  `ng-include`, and scope
-inheritance.
 
-To be Angular compatible, an AngularJS component directive should configure
-these attributes:
+Para ser compatible con Angular, una directiva de componente AngularJS
+debe configurar estos atributos:
 
-* `restrict: 'E'`. Components are usually used as elements.
-* `scope: {}` - an isolate scope. In Angular, components are always isolated
-  from their surroundings, and you should do this in AngularJS too.
-* `bindToController: {}`. Component inputs and outputs should be bound
-  to the controller instead of using the `$scope`.
-* `controller` and `controllerAs`. Components have their own controllers.
-* `template` or `templateUrl`. Components have their own templates.
+* `restrict: 'E'`. Los Componentes son usados como elementos.
+* `scope: {}` - un alcance aislado. En Angular, los componentes siempre
+  están aislados de su entorno, y usted también debería hacer esto en AngularJS.
+* `bindToController: {}`. Las entradas y salidas de los componentes deben estar
+  vinculadas al controlador en lugar de utilizar el `$scope`.
+* `controller` y `controllerAs`. Los componentes tienen sus propios controladores.
+* `template` o `templateUrl`. Los componentes tiene sus propias plantillas.
 
-Component directives may also use the following attributes:
+Las directivas de componentes también pueden utilizar los siguientes atributos:
 
-* `transclude: true/{}`, if the component needs to transclude content from elsewhere.
-* `require`, if the component needs to communicate with some parent component's
-  controller.
+* `transclude: true/{}`, si el componente necesita transcluir contenido de otro lugar.
+* `require`, si el componente necesita comunicarse de algún componente principal.
 
-Component directives **should not** use the following attributes:
+Las directivas de componentes ** no deben ** utilizar los siguientes atributos:
 
-* `compile`. This will not be supported in Angular.
-* `replace: true`. Angular never replaces a component element with the
-  component template. This attribute is also deprecated in AngularJS.
-* `priority` and `terminal`. While AngularJS components may use these,
-  they are not used in Angular and it is better not to write code
-  that relies on them.
+* `compile`. Esto no será soportado en Angular.
+* `replace: true`. Angular nunca reemplaza un elemento componente con la
+  plantilla componente. Este atributo también está desactualizado en AngularJS.
+* `priority` y `terminal`. Mientras los componentes de AngularJS puedan usarlos,
+  No se usan en Anguar y no es mejor no escribir codigo que se base en ellos.
 
-An AngularJS component directive that is fully aligned with the Angular
-architecture may look something like this:
+Una directiva de componentes de AngularJS que está completamente alineada con 
+la arquitectura de Angular puede parecer algo así:
 
 <code-example path="upgrade-module/src/app/hero-detail.directive.ts" header="hero-detail.directive.ts">
 </code-example>
 
-AngularJS 1.5 introduces the [component API](https://docs.angularjs.org/api/ng/type/angular.Module#component)
-that makes it easier to define component directives like these. It is a good idea to use
-this API for component directives for several reasons:
+AngularJS 1.5 presenta el [component API](https://docs.angularjs.org/api/ng/type/angular.Module#component)
+que facilita la definición de directivas de componentes.Es una buena idea usar la API para directivas
+de componentes por varias razones:
 
-* It requires less boilerplate code.
-* It enforces the use of component best practices like `controllerAs`.
-* It has good default values for directive attributes like `scope` and `restrict`.
+* Requiere menos código repetitivo.
+* Refuerza el uso de mejores prácticas como `controllerAs`.
+* Tiene buenos valores por defecto para atributos de directiva como `scope` y `restrict`.
 
-The component directive example from above looks like this when expressed
-using the component API:
+El ejemplo de directiva de componentes de arriba se ve así cuando se expresa
+usando el componente API
 
 <code-example path="upgrade-module/src/app/upgrade-io/hero-detail.component.ts" region="hero-detail-io" header="hero-detail.component.ts">
 </code-example>
 
-Controller lifecycle hook methods `$onInit()`, `$onDestroy()`, and `$onChanges()`
-are another convenient feature that AngularJS 1.5 introduces. They all have nearly
-exact [equivalents in Angular](guide/lifecycle-hooks), so organizing component lifecycle
-logic around them will ease the eventual Angular upgrade process.
+Métodos de gancho ( Hooks) del ciclo de vida del controlador `$onInit()`, `$onDestroy()`, y `$onChanges()`
+son otra funcionalidad conveniente que AngularJS 1.5 introduce. Todos tienen casi exactamente
+[equivalents in Angular](guide/lifecycle-hooks), por lo que organizar la lógica del ciclo de vida de
+los componentes en torno a ellos facilitará el proceso de actualización de Angular.
 
-## Upgrading with ngUpgrade
+## Mejorando con ngUpgrade
 
-The ngUpgrade library in Angular is a very useful tool for upgrading
-anything but the smallest of applications. With it you can mix and match
-AngularJS and Angular components in the same application and have them interoperate
-seamlessly. That means you don't have to do the upgrade work all at once,
-since there's a natural coexistence between the two frameworks during the
-transition period.
+La libreria ngUpgrade en Angular es una poderosa herramienta para mejorar cualquier cosa
+menos las aplicaciones muy pequeñas.Con él, puede mezclar y combinar AngularJS y componentes
+Angular en la misma aplicación y hacer que interoperen sin problemas.Eso significa que no
+tiene que hacer todo el trabajo de actualización a la vez, ya que existe una coexistencia
+natural entre los dos Frameworks durante el período de transición.
 
-### How ngUpgrade Works
+### Cómo funciona ngUpgrade
 
-One of the primary tools provided by ngUpgrade is called the `UpgradeModule`.
-This is a module that contains utilities for bootstrapping and managing hybrid
-applications that support both Angular and AngularJS code.
+Una de las herramientas principales proporcionadas por ngUpgrade se llama `UpgradeModule`.
+Este es un módulo que contiene utilidades para arrancar y administrar aplicaciones híbridas
+que admiten tanto código Angular como AngularJS.
 
-When you use ngUpgrade, what you're really doing is *running both AngularJS and
-Angular at the same time*. All Angular code is running in the Angular
-framework, and AngularJS code in the AngularJS framework. Both of these are the
-actual, fully featured versions of the frameworks. There is no emulation going on,
-so you can expect to have all the features and natural behavior of both frameworks.
+Cuando usa ngUpgrade, lo que realmente está haciendo es *ejecutando a la vez los dos:
+AngularJS y Angular*. Todo el código de Angular se está ejecutando en el Framework de
+Angular y el código de AngularJS en el Framework de AngularJS. Ambos son las
+versiones reales y con todas las funciones de los Frameworks. No hay emulación
+por lo que puede esperar tener todas las funcionalidades y el comportamiento
+natural de los dos Frameworks.
 
-What happens on top of this is that components and services managed by one
-framework can interoperate with those from the other framework. This happens
-in three main areas: Dependency injection, the DOM, and change detection.
+Lo que sucede además de esto es que los componentes y servicios administrados por un
+Framework pueden interoperar con los del otro Framework. Esto ocurre en tres áreas principales:
+Inyección de dependencia, el DOM y la detección de cambios.
 
-#### Dependency Injection
+#### Inyección de dependencia
 
-Dependency injection is front and center in both AngularJS and
-Angular, but there are some key differences between the two
-frameworks in how it actually works.
+La Inyección de dependencia es frontal y central tanto en AngularJS
+como en Angular, pero existen algunas diferencias clave entre los
+dos marcos en cuanto a cómo funciona realmente.
 
 <table>
   <tr>
@@ -198,26 +190,26 @@ frameworks in how it actually works.
   </tr>
   <tr>
     <td>
-      Dependency injection tokens are always strings
+      Los tokens de inyección de dependencias son siempre cadenas
     </td>
     <td>
 
       Tokens [can have different types](guide/dependency-injection).
-      They are often classes. They may also be strings.
+      A menudo son clases. También pueden ser cadenas.
 
     </td>
   </tr>
   <tr>
     <td>
 
-      There is exactly one injector. Even in multi-module applications,
-      everything is poured into one big namespace.
+      Hay exactamente un inyector. Incluso en aplicaciones de varios módulos,
+      todo se vierte en un gran espacio de nombres.
 
     </td>
     <td>
 
-      There is a [tree hierarchy of injectors](guide/hierarchical-dependency-injection),
-      with a root injector and an additional injector for each component.
+      Hay un [tree hierarchy of injectors](guide/hierarchical-dependency-injection),
+      con un inyector de raíz y un inyector adicional para cada componente.
 
     </td>
   </tr>
