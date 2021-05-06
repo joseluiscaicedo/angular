@@ -46,63 +46,57 @@ Cuando una aplicación se expone funcionalidad por funcionalidad,también puede 
 Para aplicaciones que no lucen asi, es un paso de preparación muy recomendable aplicar las reglas de la guía de estilo de AngularJS
 . y no es solo por el bien de la actualización - es un buen consejo en general!
 
-### Usando un Cargador de Modulo
+### Usando un Cargador de Módulos
 
-Cuando divida el código de la aplicación en un componente por archivo,
+Cuando divida el código de la aplicación en un componente por archivo, a menudo terminas con una estructura de proyecto con una gran cantidad de archivos relativamente pequeños. Esto es una forma mucho más ordenada de organizar las cosas que una pequeña cantidad de archivos grandes, pero no pero no funciona tan bien si tiene que cargar todos esos archivos en la página HTML con &lt;script&gt; etiquetas. Especialmente cuando también usted tiene que mantener esas etiquetas en el orden correcto. Por eso es una buena idea empezar a utilizar un *module loader*.
 
+Usando un cargador de modulo como [SystemJS](https://github.com/systemjs/systemjs),
+[Webpack](http://webpack.github.io/), o [Browserify](http://browserify.org/) nos permite utilizar los sistemas de módulos integrados de TypeScript o ES2015. 
+Usted puede usar las funcionalidades `import` y `export` que especifican explícitamente que codigo puede y será compartido entre las diferentes partes de la aplicación. Para las aplicaciones ES5 usted puede usar las funcionalidades `require` y `module.exports` del estilo CommonJS. En Ambos casos, el cargador de módulos se encargará de cargar todo el código que la aplicacion necesite en el orden correcto.
 
-When you break application code down into one component per file, you often end up with a project structure with a large number of relatively small files. This is
-a much neater way to organize things than a small number of large files, but it
-doesn't work that well if you have to load all those files to the HTML page with
-&lt;script&gt; tags. Especially when you also have to maintain those tags in the correct
-order. That's why it's a good idea to start using a *module loader*.
+Cuando se mueven las aplicaciones a producción, los cargadores de módulos también facilitan el empaquetado de todos ellos en paquetes de producción con baterías incluidas.
 
-Using a module loader such as [SystemJS](https://github.com/systemjs/systemjs),
-[Webpack](http://webpack.github.io/), or [Browserify](http://browserify.org/)
-allows us to use the built-in module systems of TypeScript or ES2015.
-You can use the `import` and `export` features that explicitly specify what code can
-and will be shared between different parts of the application. For ES5 applications
-you can use CommonJS style `require` and `module.exports` features. In both cases,
-the module loader will then take care of loading all the code the application needs
-in the correct order.
+### Migración a TypeScript
 
-When moving applications into production, module loaders also make it easier
-to package them all up into production bundles with batteries included.
+Parte del plan de la actualización de Angular es usar también TypeScript, esto da sentido a incorporar el compilador de TypeScript incluso antes de que comience la actualización.
+Esto significa que hay una cosa menos para aprender y pensar durante la actualización real.
+También significa que puede empezar a usar las funcionalidades de TypeScript en su codigo de AngularJS.
 
-### Migrating to TypeScript
+Dado que TypeScript es un superconjunto de ECMAScript 2015, que a su vez es un conjunto de ECMAScript 5,"cambiar" a TypeScript no requiere necesariamente nada
+más que instalar el compilador de TypeScript y cambiar el nombre de los archivos de
+`*.js` a `*.ts`. Pero hacer eso no es muy útil ni emocionante, por supuesto.
+Los pasos adicionales como los siguientes pueden darnos mucho más dinero:
 
-If part of the Angular upgrade plan is to also take TypeScript into use, it makes
-sense to bring in the TypeScript compiler even before the upgrade itself begins.
-This means there's one less thing to learn and think about during the actual upgrade.
-It also means you can start using TypeScript features in your AngularJS code.
+* Para aplicaciones que usan un cargador de módulos, TypeScript importa and exporta
+  (Los cuales son realmente importaciones y exportacion de ECMAScript 2015)
+  se puede utilizar para organizar el código en módulos.
 
-Since TypeScript is a superset of ECMAScript 2015, which in turn is a superset
-of ECMAScript 5, "switching" to TypeScript doesn't necessarily require anything
-more than installing the TypeScript compiler and renaming files from
-`*.js` to `*.ts`. But just doing that is not hugely useful or exciting, of course.
-Additional steps like the following can give us much more bang for the buck:
+* Las anotaciones de tipo se pueden agregar gradualmente a funciones y variables
+  existentes para precisar sus tipos y obtener beneficios como verificación de
+  errores en el tiempo de compilación, excelente soporte de autocompletado y
+  documentación en línea.
 
-* For applications that use a module loader, TypeScript imports and exports
-  (which are really ECMAScript 2015 imports and exports) can be used to organize
-  code into modules.
+* Las nuevas funcionalidades de JavaScript a ES2015, como funciones flecha, `let` y `const`,
+  parametros de función predeterminados, y las asignaciones de desestructuración también
+  pueden ser agregadas gradualmente para hace el código más expresivo.
 
-* Type annotations can be gradually added to existing functions and variables
-  to pin down their types and get benefits like build-time error checking,
-  great autocompletion support and inline documentation.
+* Los Servicios y controladores pueden convertirse en *clases* De esa manera,
+estarán a un paso más cerca de convertirse en clases de componentes
+y servicios de Angular, lo que hará la vida más fácil después de la actualización.
 
-* JavaScript features new to ES2015, like arrow functions, `let`s and `const`s,
-  default function parameters, and destructuring assignments can also be gradually
-  added to make the code more expressive.
+### Utilización de directivas sobre componentes
 
-* Services and controllers can be turned into *classes*. That way they'll be a step
-  closer to becoming Angular service and component classes, which will make
-  life easier after the upgrade.
+En Angular, los componentes son los primitivos principales a partir de los
+cuales se construyen las interfaces de usuario. Usted define las diferentes
+partes de la Interfaz de Usuario como componentes y conformarlos en una
+experiencia de usuario completa.
 
-### Using Component Directives
-
-In Angular, components are the main primitive from which user interfaces
-are built. You define the different portions of the UI as components and
-compose them into a full user experience.
+Usted tambien puede hacerlo en AngularJS usando *Directivas de componentes*
+Estas son directivas que definen sus propias plantillas, controladores, y enlaces
+de entrada / salida - las mismas cosas que definen los componentes en Angular.
+Las aplicaciones creadas con directivas de componentes son mucho más fáciles de
+migrar a Angular que las aplicaciones creadas con funcionalidades de nivel inferior
+como `ng-controller`, `ng-include`, y el alcance de la herencia.
 
 You can also do this in AngularJS, using *component directives*. These are
 directives that define their own templates, controllers, and input/output bindings -
