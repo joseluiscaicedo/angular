@@ -215,56 +215,58 @@ dos marcos en cuanto a cómo funciona realmente.
   </tr>
 </table>
 
-Even accounting for these differences you can still have dependency injection
-interoperability. `upgrade/static` resolves the differences and makes
-everything work seamlessly:
+Incluso teniendo en cuenta estas diferencias todavía puede tener interoperabilidad
+de inyección de dependencias. `upgrade/static` resuelve las diferencias y hace que
+todo funcione perfectamente:
 
-* You can make AngularJS services available for injection to Angular code
-  by *upgrading* them. The same singleton instance of each service is shared
-  between the frameworks. In Angular these services will always be in the
-  *root injector* and available to all components.
+* Puede hacer que los servicios de AngularJS estén disponibles para la
+  inyección de código de Angular por *upgrading*. La misma instancia de singleton
+  de cada servicio se comparte entre los Frameworks. En Angular, estos servicios siempre
+  estarán en el *root injector* y estarán disponibles para todos los componentes.
 
-* You can also make Angular services available for injection to AngularJS code
-  by *downgrading* them. Only services from the Angular root injector can
-  be downgraded. Again, the same singleton instances are shared between the frameworks.
-  When you register a downgraded service, you must explicitly specify a *string token* that you want to
-  use in AngularJS.
+* También puede hacer que los servicios de Angular estén disponibles para inyección
+  en el código de AngularJS *degradándolos*. Solo se pueden degradar los servicios
+  del inyector de raíz de Angular. Nuevamente, las mismas instancias de singleton se
+  comparten entre los Framework.
+  Cuando registra un servicio degradado, debe especificar explícitamente un *string token*
+  que desea usar en AngularJS.
 
 <div class="lightbox">
   <img src="generated/images/guide/upgrade/injectors.png" alt="The two injectors in a hybrid application">
 </div>
 
-#### Components and the DOM
+#### Los Componentes y el DOM
 
-In the DOM of a hybrid ngUpgrade application are components and
-directives from both AngularJS and Angular. These components
-communicate with each other by using the input and output bindings
-of their respective frameworks, which ngUpgrade bridges together. They may also
-communicate through shared injected dependencies, as described above.
+En el DOM de una aplicación ngUpgrade híbrida hay componentes y
+directivas de AngularJS y Angular. Estos componentes
+se comunican entre sí mediante los enlaces de entrada y salida
+de sus respectivos Frameworks, que se conectan mediante ngUpgrade.
+También pueden comunicarse a través de dependencias inyectadas compartidas,
+como se describe anteriormente.
 
-The key thing to understand about a hybrid application is that every element in the DOM is owned by exactly one of the two frameworks.
-The other framework ignores it. If an element is
-owned by AngularJS, Angular treats it as if it didn't exist,
-and vice versa.
+La clave para entender acerca de una aplicación híbrida es que cada elemento en el DOM
+es propiedad de uno de los dos marcos.
 
-So normally a hybrid application begins life as an AngularJS application,
-and it is AngularJS that processes the root template, e.g. the index.html.
-Angular then steps into the picture when an Angular component is used somewhere
-in an AngularJS template. That component's template will then be managed
-by Angular, and it may contain any number of Angular components and
-directives.
+El otro framework lo ignora. Si un elemento es
+propiedad de AngularJS, Angular lo trata como si no existiera,
+y viceversa.
 
-Beyond that, you may interleave the two frameworks.
-You always cross the boundary between the two frameworks by one of two
-ways:
+Entonces, normalmente, una aplicación híbrida comienza su vida como una aplicación AngularJS, y es AngularJS quien procesa la plantilla raíz, por ejemplo el index.html.
 
-1. By using a component from the other framework: An AngularJS template
-   using an Angular component, or an Angular template using an
-   AngularJS component.
+Entonces Angular entra en la imagen cuando se usa un componente de Angular
+en algún lugar de una plantilla AngularJS. La plantilla de ese componente
+será administrada por Angular y puede contener cualquier número de componentes
+y directivas de Angular.
 
-2. By transcluding or projecting content from the other framework. ngUpgrade
-    bridges the related concepts of AngularJS transclusion and Angular content
-    projection together.
+Más allá de eso, puede intercalar los dos Frameworks.
+Siempre cruza el límite entre los dos Frameworks de una de estas dos formas:
+
+1. Mediante el uso de un componente del otro marco: una plantilla AngularJS
+    usando un componente Angular, o una plantilla Angular usando un
+    Componente AngularJS.
+2. Transcluyendo o proyectando contenido del otro framework. ngUpgrade
+    une los conceptos relacionados de la transclusión de AngularJS y la proyección
+    del contenido de Angular.
 
 <div class="lightbox">
   <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
@@ -279,26 +281,26 @@ where you use an Angular component from AngularJS like this:
   &lt;a-component&gt;&lt;/a-component&gt;
 </code-example>
 
-The DOM element `<a-component>` will remain to be an AngularJS managed
-element, because it's defined in an AngularJS template. That also
-means you can apply additional AngularJS directives to it, but *not*
-Angular directives. It is only in the template of the `<a-component>`
-where Angular steps in. This same rule also applies when you
-use AngularJS component directives from Angular.
+El elemento DOM `<a-component>` seguirá siendo un elemento administrado
+por AngularJS, porque está definido en una plantilla AngularJS. Eso
+también significa que usted puede aplicarle directivas AngularJS
+adicionales, pero *no* directivas de Angular. Es solo en la plantilla
+del `<a-component>` donde Angular interviene. Esta misma regla también
+se aplica cuando usa las directivas del componente AngularJS de Angular.
 
-#### Change Detection
+#### Detección de Cambios
 
-The `scope.$apply()` is how AngularJS detects changes and updates data bindings.
-After every event that occurs, `scope.$apply()` gets called. This is done either
-automatically by the framework, or manually by you.
+El `scope.$apply()` es cómo AngularJS detecta los cambios y actualiza los enlaces de datos.
+Después de cada evento que ocurre, `scope.$apply()` es llamado. Esto lo hace automáticamente
+el framework o usted lo hace manualmente.
 
-In Angular things are different. While change detection still
-occurs after every event, no one needs to call `scope.$apply()` for
-that to happen. This is because all Angular code runs inside something
-called the [Angular zone](api/core/NgZone). Angular always
-knows when the code finishes, so it also knows when it should kick off
-change detection. The code itself doesn't have to call `scope.$apply()`
-or anything like it.
+En Angular las cosas son diferentes. Mientras la detección de cambios aún
+ocurre después de cada evento, nadie necesita llamar a `scope. $ apply ()`
+para que suceda. Esto se debe a que todo el código angular se ejecuta dentro
+de algo llamado el [Angular zone](api/core/NgZone).
+Angular siempre sabe cuándo termina el código, por lo que también sabe cuándo
+debería comenzar la detección de cambios. El código en sí no tiene que llamar a
+`scope. $ Apply ()` o algo parecido.
 
 In the case of hybrid applications, the `UpgradeModule` bridges the
 AngularJS and Angular approaches. Here's what happens:
