@@ -245,7 +245,7 @@ También pueden comunicarse a través de dependencias inyectadas compartidas,
 como se describe anteriormente.
 
 La clave para entender acerca de una aplicación híbrida es que cada elemento en el DOM
-es propiedad de uno de los dos marcos.
+es propiedad de uno de los dos Frameworks.
 
 El otro framework lo ignora. Si un elemento es
 propiedad de AngularJS, Angular lo trata como si no existiera,
@@ -253,8 +253,8 @@ y viceversa.
 
 Entonces, normalmente, una aplicación híbrida comienza su vida como una aplicación AngularJS, y es AngularJS quien procesa la plantilla raíz, por ejemplo el index.html.
 
-Entonces Angular entra en la imagen cuando se usa un componente de Angular
-en algún lugar de una plantilla AngularJS. La plantilla de ese componente
+Entonces Angular entra en acción cuando se usa un componente de Angular
+en algún lugar de una plantilla de AngularJS. La plantilla de ese componente
 será administrada por Angular y puede contener cualquier número de componentes
 y directivas de Angular.
 
@@ -272,10 +272,10 @@ Siempre cruza el límite entre los dos Frameworks de una de estas dos formas:
   <img src="generated/images/guide/upgrade/dom.png" alt="DOM element ownership in a hybrid application">
 </div>
 
-Whenever you use a component that belongs to the other framework, a
-switch between framework boundaries occurs. However, that switch only
-happens to the elements in the template of that component. Consider a situation
-where you use an Angular component from AngularJS like this:
+Siempre que utilice un componente que pertenezca al otro framework,
+se produce un cambio entre los límites del framework. Sin embargo, ese cambio sólo
+sucede a los elementos en la plantilla de ese componente. Considere una situación
+donde use un componente de Angular desde AngularJS así:
 
 <code-example language="html" escape="html">
   &lt;a-component&gt;&lt;/a-component&gt;
@@ -302,106 +302,103 @@ Angular siempre sabe cuándo termina el código, por lo que también sabe cuánd
 debería comenzar la detección de cambios. El código en sí no tiene que llamar a
 `scope. $ Apply ()` o algo parecido.
 
-In the case of hybrid applications, the `UpgradeModule` bridges the
-AngularJS and Angular approaches. Here's what happens:
+En el caso de aplicaciones híbridas, el `UpgradeModule` une los
+enfoques de AngularJS y Angular. Esto es lo que sucede:
 
-* Everything that happens in the application runs inside the Angular zone.
-  This is true whether the event originated in AngularJS or Angular code.
-  The zone triggers Angular change detection after every event.
+* Todo lo que pasa en la aplicación se ejecuta dentro de la zona de Angular.
+  Esto es cierto ya sea que el evento se originó en AngularJS o en el código de Angular.
 
-* The `UpgradeModule` will invoke the AngularJS `$rootScope.$apply()` after
-  every turn of the Angular zone. This also triggers AngularJS change
-  detection after every event.
+* El `UpgradeModule` invocará el AngularJS `$rootScope.$apply()` después
+  de cada vuelta de la Zona de Angular. Esto también activa la detección de cambios de
+  Angular después de cada evento.
 
 <div class="lightbox">
   <img src="generated/images/guide/upgrade/change_detection.png" alt="Change detection in a hybrid application">
 </div>
 
-In practice, you do not need to call `$apply()`,
-regardless of whether it is in AngularJS or Angular. The
-`UpgradeModule` does it for us. You *can* still call `$apply()` so there
-is no need to remove such calls from existing code. Those calls just trigger
-additional AngularJS change detection checks in a hybrid application.
+En la práctica, no es necesario llamar `$apply()`,
+independientemente si está en AngularJS or Angular. El
+`UpgradeModule` lo hace por nosotros. Usted *puede* llamar incluso `$apply()`
+asi que no es necesario eliminar las llamadas del código existente.
+Esas llamadas solo activan las comprobaciones adicionales de detección de cambios
+en una aplicación híbrida.
 
-When you downgrade an Angular component and then use it from AngularJS,
-the component's inputs will be watched using AngularJS change detection.
-When those inputs change, the corresponding properties in the component
-are set. You can also hook into the changes by implementing the
-[OnChanges](api/core/OnChanges) interface in the component,
-just like you could if it hadn't been downgraded.
+Cuando usted baja de versión un componente de Angular y luego lo usa en AngularJS,
+las entradas del componente se observarán mediante la detección de cambios de AngularJS.
+Cuando esas entradas cambian, las propiedades correspondientes en el componente
+son ajustadas. También puede conectarse a los cambios mediante la implementación de
+la interfaz [OnChanges](api/core/OnChanges) en el componente,
+de igual manera lo podría hacer si no ha bajado la versión del componente.
 
-Correspondingly, when you upgrade an AngularJS component and use it from Angular,
-all the bindings defined for the component directive's `scope` (or `bindToController`)
-will be hooked into Angular change detection. They will be treated
-as regular Angular inputs. Their values will be written to the upgraded component's
-scope (or controller) when they change.
+Correspondientemente, cuando actualice un componente AngularJS y lo use desde Angular,
+todas los enlaces definidos por el `scope` de la directiva del componente (o `bindToController`)
+se conectará a la detección de cambio de Angular. Serán tratados
+como entradas regulares de Angular. Sus valores se escribirán en el ámbito (o controlador) del componente actualizado cuando ellos cambien.
 
-### Using UpgradeModule with Angular _NgModules_
+### Uso de UpgradeModule con Angular _NgModules_
+Tanto AngularJS como Angular tienen su propio concepto de módulos
+para ayudar a organizar una aplicación en bloques cohesivos de funcionalidad.
 
-Both AngularJS and Angular have their own concept of modules
-to help organize an application into cohesive blocks of functionality.
+Sus detalles son muy diferentes en arquitectura e implementación.
+En AngularJS, se añaden activos de Angular a la propiedad `angular.module`.
+En Angular, Usted crea una o más clases adornadas con un decorador `NgModule`
+que describe activos de Angular en metadatos. Las diferencias florecen a partir de ahí.
 
-Their details are quite different in architecture and implementation.
-In AngularJS, you add Angular assets to the `angular.module` property.
-In Angular, you create one or more classes adorned with an `NgModule` decorator
-that describes Angular assets in metadata. The differences blossom from there.
-
-In a hybrid application you run both versions of Angular at the same time.
-That means that you need at least one module each from both AngularJS and Angular.
-You will import `UpgradeModule` inside the NgModule, and then use it for
-bootstrapping the AngularJS module.
+En una aplicación híbrida se ejecutan ambas versiones de Angular al mismo tiempo.
+Eso significa que necesitas al menos un módulo de AngularJS y Angular.
+Importará `UpgradeModule` dentro del NgModule, y luego lo usará para
+cargar el módulo AngularJS.
 
 <div class="alert is-helpful">
 
-For more information, see [NgModules](guide/ngmodules).
+Para mayor información , ingrese a [NgModules](guide/ngmodules).
 
 </div>
 
-### Bootstrapping hybrid applications
+### Cargando aplicaciones Híbridas
 
-To bootstrap a hybrid application, you must bootstrap each of the Angular and
-AngularJS parts of the application. You must bootstrap the Angular bits first and
-then ask the `UpgradeModule` to bootstrap the AngularJS bits next.
+Para cargar una aplicación híbrida, debe cargar cada una de las partes Angular y
+AngularJS de la aplicación. Primero debe cargar los bits de Angular y
+luego preguntar al `UpgradeModule` para luego cargar los bits de AngularJS.
 
-In an AngularJS application you have a root AngularJS module, which will also
-be used to bootstrap the AngularJS application.
+En una aplicación AngularJS tiene un módulo raíz de AngularJS, que también se
+utilizará para cargar la aplicación.
 
 <code-example path="upgrade-module/src/app/ajs-bootstrap/app.module.ts" region="ng1module" header="app.module.ts">
 </code-example>
 
-Pure AngularJS applications can be automatically bootstrapped by using an `ng-app`
-directive somewhere on the HTML page. But for hybrid applications, you manually bootstrap via the
-`UpgradeModule`. Therefore, it is a good preliminary step to switch AngularJS applications to use the
+Las aplicaciones puras de AngularJS se pueden cargar automáticamente usando `ng-app`
+en algún lugar de la página HTML. Pero para aplicaciones híbridas, se carga manualmente a través de
+`UpgradeModule`. Por lo tanto, es un buen paso preliminar para cambiar las aplicaciones de AngularJS para utilizar el
 manual JavaScript [`angular.bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap)
-method even before switching them to hybrid mode.
+incluso antes de cambiarlos al modo híbrido.
 
-Say you have an `ng-app` driven bootstrap such as this one:
+Digamos que tiene un manejador `ng-app` para cargar como este:
 
 <code-example path="upgrade-module/src/index-ng-app.html">
 </code-example>
 
-You can remove the `ng-app` and `ng-strict-di` directives from the HTML
-and instead switch to calling `angular.bootstrap` from JavaScript, which
-will result in the same thing:
+Puede eliminar las directivas `ng-app` y `ng-strict-di` del HTML
+y en su lugar cambiar para llamar a `angular.bootstrap` desde JavaScript, que
+resultará en lo mismo:
 
 <code-example path="upgrade-module/src/app/ajs-bootstrap/app.module.ts" region="bootstrap" header="app.module.ts">
 </code-example>
 
-To begin converting your AngularJS application to a hybrid, you need to load the Angular framework.
-You can see how this can be done with SystemJS by following the instructions in [Setup for Upgrading to AngularJS](guide/upgrade-setup) for selectively copying code from the [QuickStart github repository](https://github.com/angular/quickstart).
+Para comenzar a convertir su aplicación de AngularJS a una híbrida, necesita cargar el framework de Angular. Puedes ver cómo se puede hacer esto con SystemJS siguiendo las instrucciones en [Setup for Upgrading to AngularJS](guide/upgrade-setup) para copiar selectivamente  el código de [QuickStart github repository](https://github.com/angular/quickstart).
 
-You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
-and add a mapping for the `@angular/upgrade/static` package:
+También es necesario instalar el `@angular/upgrade` a través del paquete `npm install @angular/upgrade --save` y adicionar una asignación para el paquete `@angular/upgrade/static` :
 
 <code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-umd" header="systemjs.config.js (map)">
 </code-example>
 
-Next, create an `app.module.ts` file and add the following `NgModule` class:
+A continuación, cree un archivo `app.module.ts` y agregue la siguiente clase `NgModule`:
 
 <code-example path="upgrade-module/src/app/ajs-a-hybrid-bootstrap/app.module.ts" region="ngmodule" header="app.module.ts">
 </code-example>
 
-This bare minimum `NgModule` imports `BrowserModule`, the module every Angular browser-based app must have.
+Este mínimo `NgModule` importa` BrowserModule`, el módulo que toda aplicación basada en navegador de Angular debe tener.
+
 It also imports `UpgradeModule` from `@angular/upgrade/static`, which exports providers that will be used
 for upgrading and downgrading services and components.
 
