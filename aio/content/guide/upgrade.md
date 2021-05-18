@@ -399,106 +399,107 @@ A continuación, cree un archivo `app.module.ts` y agregue la siguiente clase `N
 
 Este mínimo `NgModule` importa` BrowserModule`, el módulo que toda aplicación basada en navegador de Angular debe tener.
 
-It also imports `UpgradeModule` from `@angular/upgrade/static`, which exports providers that will be used
-for upgrading and downgrading services and components.
+También importa `UpgradeModule` de `@angular/upgrade/static`,
+It also imports `UpgradeModule` from `@angular/upgrade/static`, que exporta proveedores que serán
+usados
+para mejorar y degradar los servicios y los componentes.
 
-In the constructor of the `AppModule`, use dependency injection to get a hold of the `UpgradeModule` instance,
-and use it to bootstrap the AngularJS app in the `AppModule.ngDoBootstrap` method.
-The `upgrade.bootstrap` method takes the exact same arguments as [angular.bootstrap](https://docs.angularjs.org/api/ng/function/angular.bootstrap):
+En el constructor de `AppModule`, use la inyección de dependencia para obtener la instancia de` UpgradeModule`,
+y utilícelo para cargar la aplicación de AngularJS en el método `AppModule.ngDoBootstrap`.
+
+El metodo `upgrade.bootstrap` toma exactamente los mismos argumentos como [angular.bootstrap](https://docs.angularjs.org/api/ng/function/angular.bootstrap):
 
 <div class="alert is-helpful">
 
-Note that you do not add a `bootstrap` declaration to the `@NgModule` decorator, since
-AngularJS will own the root template of the application.
+Tenga en cuenta de no agrega una declaración `bootstrap` al decorador` @ NgModule`, ya que
+AngularJS será el propietario de la plantilla raíz de la aplicación.
+
 
 </div>
 
-Now you can bootstrap `AppModule` using the `platformBrowserDynamic.bootstrapModule` method.
+Ahora puede cargar `AppModule` usando el metodo `platformBrowserDynamic.bootstrapModule`.
 
 <code-example path="upgrade-module/src/app/ajs-a-hybrid-bootstrap/app.module.ts" region="bootstrap" header="app.module.ts'">
 </code-example>
 
-Congratulations! You're running a hybrid application! The
-existing AngularJS code works as before _and_ you're ready to start adding Angular code.
+¡Felicidades! ¡Estás ejecutando una aplicación híbrida!
+El código AngularJS existente funciona como antes de _and_ ya está listo para empezar a agregar código angular.
 
-### Using Angular Components from AngularJS Code
+### Uso de componentes de Angular desde código AngularJS
 
 <img src="generated/images/guide/upgrade/ajs-to-a.png" alt="Using an Angular component from AngularJS code" class="left">
 
-Once you're running a hybrid app, you can start the gradual process of upgrading
-code. One of the more common patterns for doing that is to use an Angular component
-in an AngularJS context. This could be a completely new component or one that was
-previously AngularJS but has been rewritten for Angular.
+Una vez que usted esté ejecutando una aplicación híbrida, puede iniciar el proceso gradual de actualización del código. Uno de los patrones más comunes para hacer eso es utilizar un componente de Angular en un contexto AngularJS. Este podría ser un componente completamente nuevo o uno de
+AngularJS pero ha sido reescrito para Angular.
 
-Say you have a simple Angular component that shows information about a hero:
+Digamos que tiene un componente simple de Angular que muestra información sobre un hero:
 
 <code-example path="upgrade-module/src/app/downgrade-static/hero-detail.component.ts" header="hero-detail.component.ts">
 </code-example>
 
-If you want to use this component from AngularJS, you need to *downgrade* it
-using the `downgradeComponent()` method. The result is an AngularJS
-*directive*, which you can then register in the AngularJS module:
+Si quiere usar este componente desde AngularJS, necesitas *degradarlo*
+usando el método `downgradeComponent()` . El resultado es una *directiva* de
+AngularJS, que puede registrar en el módulo AngularJS:
 
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="downgradecomponent" header="app.module.ts">
 </code-example>
 
-Because `HeroDetailComponent` is an Angular component, you must also add it to the
-`declarations` in the `AppModule`.
+Debido a que `HeroDetailComponent` es un componente de Angular, también se debe añadir a las `declaraciones ` en el `AppModule`.
 
-And because this component is being used from the AngularJS module, and is an entry point into
-the Angular application, you must add it to the `entryComponents` for the
-NgModule.
+Y porque este componente esta siendo usada desde el módulo de AngularJS, y es un punto de entrada
+en la aplicación de Angular, usted debe añadirlo a la `entryComponents` por el NgModule.
 
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" header="app.module.ts">
 </code-example>
 
 <div class="alert is-helpful">
 
-All Angular components, directives and pipes must be declared in an NgModule.
+Todos los componentes de Angular, directivas y pipes deben ser declarados en un NgModule.
 
 </div>
 
-The net result is an AngularJS directive called `heroDetail`, that you can
-use like any other directive in AngularJS templates.
+El resultado neto es una directiva AngularJS llamada `heroDetail`, que se puede
+usar como cualquier otra directiva en las plantillas de AngularJS.
 
 <code-example path="upgrade-module/src/index-downgrade-static.html" region="usecomponent">
 </code-example>
 
 <div class="alert is-helpful">
 
-Note that this AngularJS is an element directive (`restrict: 'E'`) called `heroDetail`.
-An AngularJS element directive is matched based on its _name_.
-*The `selector` metadata of the downgraded Angular component is ignored.*
+Tenga en cuenta que este AngularJS es una directiva de elementos (`restrict: 'E'`) llamado `heroDetail`.
+
+Una directiva de elementos de AngularJS coincide basada en su _name_.
+*Se ignora los metadatos del `selector` del componente degradado de Angular*
 
 </div>
 
-Most components are not quite this simple, of course. Many of them
-have *inputs and outputs* that connect them to the outside world. An
-Angular hero detail component with inputs and outputs might look
-like this:
+Por supuesto, para la mayoría de los componentes no están fácil. Muchos de ellos
+tienen *inputs and outputs* que los conectan con el mundo exterior. Un
+componente hero detail(detalle de héroe) de Angular con entradas y salidas podría verse así:
 
 <code-example path="upgrade-module/src/app/downgrade-io/hero-detail.component.ts" header="hero-detail.component.ts">
 </code-example>
 
-These inputs and outputs can be supplied from the AngularJS template, and the
-`downgradeComponent()` method takes care of wiring them up:
+Estas entradas y salidas pueden suministrarse desde la plantilla de AngularJS, y el
+método `downgradeComponent()` se encarga de cablearlas:
 
 <code-example path="upgrade-module/src/index-downgrade-io.html" region="usecomponent">
 </code-example>
 
-Note that even though you are in an AngularJS template, **you're using Angular
-attribute syntax to bind the inputs and outputs**. This is a requirement for downgraded
-components. The expressions themselves are still regular AngularJS expressions.
+Tenga en cuenta que aunque usted esté en una plantilla de AngularJS,
+**Usted está usando la sintaxis de atributos de Angular para enlazar las entradas y las salidas**
+Es un requisito para degradar los componentes. Las expresiones mismas siguen siendo expresiones regulares de AngularJS.
 
 <div class="callout is-important">
 
 <header>
-  Use kebab-case for downgraded component attributes
+  Usar kebab-case para atributos de componentes degradados
 </header>
 
-There's one notable exception to the rule of using Angular attribute syntax
-for downgraded components. It has to do with input or output names that consist
-of multiple words. In Angular, you would bind these attributes using camelCase:
+Hay una excepción notable a la regla de usar la sintaxis del atributo en Angular
+para los componentes degradados. Tiene que ver con nombres de entrada o salida que consisten
+de múltiples palabras. En Angular, usted enlazaría estos atributos usando camelCase:
+
 
 <code-example format="">
   [myHero]="hero"
